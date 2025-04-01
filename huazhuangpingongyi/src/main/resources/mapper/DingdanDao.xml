@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dao.DingdanDao">
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        a.id as id
+        ,a.ordernumber as ordernumber
+        ,a.huazhuangpin_id as huazhuangpinId
+        ,a.yonghu_id as yonghuId
+        ,a.number as number
+        ,a.expense as expense
+        ,a.maxexpense as maxexpense
+        ,a.goumai_time as goumaiTime
+        ,a.create_time as createTime
+    </sql>
+    <select id="selectListView" parameterType="map" resultType="com.entity.view.DingdanView" >
+        SELECT
+        <include refid="Base_Column_List" />
+
+--         级联表的字段
+        ,huazhuangpin.kzpname as kzpname
+        ,huazhuangpin.pinpai_types as pinpaiTypes
+        ,huazhuangpin.leixing_types as leixingTypes
+        ,huazhuangpin.gongyi_types as gongyiTypes
+        ,huazhuangpin.expense as expense
+        ,huazhuangpin.img_photo as imgPhoto
+        ,yonghu.name as name
+        ,yonghu.username as username
+        ,yonghu.password as password
+        ,yonghu.img_photo as imgPhoto
+        ,yonghu.sex_types as sexTypes
+        ,yonghu.phone as phone
+        ,yonghu.id_number as idNumber
+        ,yonghu.role as role
+
+        FROM dingdan  a
+        left JOIN huazhuangpin huazhuangpin ON a.huazhuangpin_id = huazhuangpin.id
+        left JOIN yonghu yonghu ON a.yonghu_id = yonghu.id
+
+        <where>
+            <if test="params.ordernumberStart != null">
+                <![CDATA[  and a.ordernumber >= #{params.ordernumberStart}   ]]>
+            </if>
+            <if test="params.ordernumberEnd != null">
+                <![CDATA[  and a.ordernumber <= #{params.ordernumberEnd}   ]]>
+            </if>
+            <if test="params.huazhuangpinId != null">
+                and a.huazhuangpin_id = #{params.huazhuangpinId}
+            </if>
+            <if test="params.yonghuId != null">
+                and a.yonghu_id = #{params.yonghuId}
+            </if>
+            <if test="params.numberStart != null">
+                <![CDATA[  and a.number >= #{params.numberStart}   ]]>
+            </if>
+            <if test="params.numberEnd != null">
+                <![CDATA[  and a.number <= #{params.numberEnd}   ]]>
+            </if>
+            <if test="params.expenseStart != null ">
+                <![CDATA[  and a.expense >= #{params.expenseStart}   ]]>
+            </if>
+            <if test="params.expenseEnd != null ">
+                <![CDATA[  and a.expense <= #{params.expenseEnd}   ]]>
+            </if>
+            <if test="params.maxexpenseStart != null ">
+                <![CDATA[  and a.maxexpense >= #{params.maxexpenseStart}   ]]>
+            </if>
+            <if test="params.maxexpenseEnd != null ">
+                <![CDATA[  and a.maxexpense <= #{params.maxexpenseEnd}   ]]>
+            </if>
+            <if test=" params.goumaiTimeStart != '' and params.goumaiTimeStart != null ">
+                <![CDATA[  and DATE_FORMAT(a.goumai_time, '%Y-%m-%d %H:%T:%s') >=
+                DATE_FORMAT(#{params.goumaiTimeStart}, '%Y-%m-%d %H:%T:%s')   ]]>
+            </if>
+            <if test=" params.goumaiTimeEnd != '' and params.goumaiTimeEnd != null ">
+                <![CDATA[  and DATE_FORMAT(a.goumai_time, '%Y-%m-%d %H:%T:%s') <=
+                DATE_FORMAT(#{params.goumaiTimeEnd} , '%Y-%m-%d %H:%T:%s')    ]]>
+            </if>
+
+            <if test=" params.kzpname != '' and params.kzpname != null and params.kzpname != 'null' ">
+                and huazhuangpin.kzpname like CONCAT('%',#{params.kzpname},'%')
+            </if>
+            <if test="params.pinpaiTypes != null">
+                and huazhuangpin.pinpai_types = #{params.pinpaiTypes}
+            </if>
+
+            <if test="params.leixingTypes != null">
+                and huazhuangpin.leixing_types = #{params.leixingTypes}
+            </if>
+
+            <if test="params.gongyiTypes != null">
+                and huazhuangpin.gongyi_types = #{params.gongyiTypes}
+            </if>
+
+            <if test="params.expenseStart != null ">
+                <![CDATA[  and huazhuangpin.expense >= #{params.expenseStart}   ]]>
+            </if>
+            <if test="params.expenseEnd != null ">
+                <![CDATA[  and huazhuangpin.expense <= #{params.expenseEnd}   ]]>
+            </if>
+            <if test=" params.name != '' and params.name != null and params.name != 'null' ">
+                and yonghu.name like CONCAT('%',#{params.name},'%')
+            </if>
+            <if test=" params.username != '' and params.username != null and params.username != 'null' ">
+                and yonghu.username like CONCAT('%',#{params.username},'%')
+            </if>
+            <if test=" params.password != '' and params.password != null and params.password != 'null' ">
+                and yonghu.password like CONCAT('%',#{params.password},'%')
+            </if>
+            <if test="params.sexTypes != null">
+                and yonghu.sex_types = #{params.sexTypes}
+            </if>
+
+            <if test=" params.phone != '' and params.phone != null and params.phone != 'null' ">
+                and yonghu.phone like CONCAT('%',#{params.phone},'%')
+            </if>
+            <if test=" params.idNumber != '' and params.idNumber != null and params.idNumber != 'null' ">
+                and yonghu.id_number like CONCAT('%',#{params.idNumber},'%')
+            </if>
+            <if test=" params.role != '' and params.role != null and params.role != 'null' ">
+                and yonghu.role like CONCAT('%',#{params.role},'%')
+            </if>
+        </where>
+        order by a.id desc
+    </select>
+
+</mapper>
